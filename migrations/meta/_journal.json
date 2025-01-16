@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1736948840284,
+      "tag": "0000_salty_human_fly",
+      "breakpoints": true
+    }
+  ]
+}
