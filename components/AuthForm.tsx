@@ -23,11 +23,13 @@ import Link from "next/link";
 import { Path } from "react-hook-form";
 import { FIELD_NAMES, FIELD_TYPES } from "@/constants";
 import ImageUpload from "./ImageUpload";
+import { useRouter } from "next/navigation";
+import { toast } from "@/hooks/use-toast";
 
 interface Props<T extends FieldValues> {
   schema: ZodType<T>;
   defaultValues: T;
-  onSumbmit: (data: T) => Promise<{ success: Boolean; error?: string }>;
+  onSubmit: (data: T) => Promise<{ success: boolean; error?: string }>;
   type: "SIGN_IN" | "SIGN_UP";
 }
 
@@ -37,6 +39,8 @@ const AuthForm = <T extends FieldValues>({
   defaultValues,
   onSubmit,
 }: Props<T>) => {
+  const router = useRouter();
+
   const isSignIn = type === "SIGN_IN";
 
   const form: UseFormReturn<T> = useForm({
@@ -47,11 +51,20 @@ const AuthForm = <T extends FieldValues>({
   const handleSubmit: SubmitHandler<T> = async (data) => {
     const result = await onSubmit(data);
 
-    if(result.success) {
+    if (result.success) {
       toast({
-        title: 'Success',
-        description: isSignIn ? 'You have successfully' : 'You have successfully signed up',
-      })
+        title: "Success",
+        description: isSignIn
+          ? "You have successfully"
+          : "You have successfully signed up",
+      });
+      router.push("/");
+    } else {
+      toast({
+        title: `Error ${isSignIn ? "signing in" : "signing up"}`,
+        description: result.error ?? "An error occurred",
+        variant: "destructive",
+      });
     }
   };
   return (
@@ -82,11 +95,16 @@ const AuthForm = <T extends FieldValues>({
                   </FormLabel>
                   <FormControl>
                     {field.name === "universityCard" ? (
-                      <ImageUpload onFiledChange={field.onChange} />
+                      <ImageUpload onFileChnage={field.onChange} />
                     ) : (
-                      <Input required type=
-                        {FIELD_TYPES[field.name as keyof typeof FIELD_TYPES]}
-                      {...field} className="form-input" />
+                      <Input
+                        required
+                        type={
+                          FIELD_TYPES[field.name as keyof typeof FIELD_TYPES]
+                        }
+                        {...field}
+                        className="form-input"
+                      />
                     )}
                   </FormControl>
                   <FormMessage />
@@ -94,7 +112,9 @@ const AuthForm = <T extends FieldValues>({
               )}
             />
           ))}
-          <Button type="submit" className="form-btn">{isSignIn ? 'Sign In' : 'Sign Up'}</Button>
+          <Button type="submit" className="form-btn">
+            {isSignIn ? "Sign In" : "Sign Up"}
+          </Button>
         </form>
       </Form>
 
