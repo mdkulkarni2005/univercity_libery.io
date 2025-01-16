@@ -44,7 +44,16 @@ const AuthForm = <T extends FieldValues>({
     defaultValues: defaultValues as DefaultValues<T>,
   });
 
-  const handleSubmit: SubmitHandler<T> = async (data) => {};
+  const handleSubmit: SubmitHandler<T> = async (data) => {
+    const result = await onSubmit(data);
+
+    if(result.success) {
+      toast({
+        title: 'Success',
+        description: isSignIn ? 'You have successfully' : 'You have successfully signed up',
+      })
+    }
+  };
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-2xl font-semibold text-white">
